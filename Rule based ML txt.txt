@@ -1,0 +1,79 @@
+import pandas as pd
+from sklearn.preprocessing import MultiLabelBinarizer
+import random
+
+# 1. Data Loading (Using pyarrow)
+df = pd.read_parquet('/Users/Bobby/Documents/ML Project/test.parquet', engine='pyarrow')  
+
+# 2. Sampling
+sample_df = df.sample(n=1000, random_state=42)
+sample_df.reset_index(drop=True, inplace=True)
+
+# 3. Data Preprocessing
+sample_df['brand'] = sample_df['brand'].astype(str).str.lower()
+sample_df['cat_0'] = sample_df['cat_0'].astype(str).str.lower()
+sample_df['cat_1'] = sample_df['cat_1'].astype(str).str.lower()
+sample_df['cat_2'] = sample_df['cat_2'].astype(str).str.lower()
+
+# 4. Feature Encoding
+# Create separate binarizers for each column
+brand_mlb = MultiLabelBinarizer()
+cat0_mlb = MultiLabelBinarizer()
+cat1_mlb = MultiLabelBinarizer()
+cat2_mlb = MultiLabelBinarizer()
+
+# Fit and transform each column separately 
+encoded_brand = brand_mlb.fit_transform(sample_df['brand'].values.reshape(-1, 1))
+encoded_cat0 = cat0_mlb.fit_transform(sample_df['cat_0'].values.reshape(-1, 1))
+encoded_cat1 = cat1_mlb.fit_transform(sample_df['cat_1'].values.reshape(-1, 1))
+encoded_cat2 = cat2_mlb.fit_transform(sample_df['cat_2'].values.reshape(-1, 1))
+
+# Create separate DataFrames for each encoded column using the correct binarizer
+encoded_brand_df = pd.DataFrame(encoded_brand, columns=[f"brand_{c}" for c in brand_mlb.classes_], index=sample_df.index)
+encoded_cat0_df = pd.DataFrame(encoded_cat0, columns=[f"cat_0_{c}" for c in cat0_mlb.classes_], index=sample_df.index)
+encoded_cat1_df = pd.DataFrame(encoded_cat1, columns=[f"cat_1_{c}" for c in cat1_mlb.classes_], index=sample_df.index)
+encoded_cat2_df = pd.DataFrame(encoded_cat2, columns=[f"cat_2_{c}" for c in cat2_mlb.classes_], index=sample_df.index)
+
+# Combine all encoded features
+encoded_df = pd.concat([encoded_brand_df, encoded_cat0_df, encoded_cat1_df, encoded_cat2_df], axis=1)
+
+# Combine with original dataframe 
+sample_df = sample_df.join(encoded_df)
+
+# 5. Recommendation Function
+def recommend_items(keyword, df=sample_df, num_recs=5):
+    relevant_cols = ['brand', 'cat_0', 'cat_1', 'cat_2'] + list(encoded_df.columns)
+
+    # Filter relevant rows based on keyword
+    filtered_df = df[df[relevant_cols].apply(lambda row: keyword in row.values, axis=1)]
+
+    recommendations = []
+    for brand in filtered_df['brand'].unique():
+        for cat1 in filtered_df[filtered_df['brand'] == brand]['cat_1'].unique():
+            for cat2 in filtered_df[(filtered_df['brand'] == brand) & (filtered_df['cat_1'] == cat1)]['cat_2'].unique():
+                group = filtered_df[(filtered_df['brand'] == brand) & 
+                                   (filtered_df['cat_1'] == cat1) & 
+                                   (filtered_df['cat_2'] == cat2)]
+
+                # Sample and get relevant columns as dictionaries
+                recs = group.sample(min(num_recs, len(group)))[['product_id', 'brand', 'price', 'cat_0', 'cat_1', 'cat_2']].to_dict(orient='records')
+                recommendations.append(recs)
+
+    return recommendations[:3]  # Get top 3 recommendations
+
+# 6. User Interaction
+keyword = input("Enter your search keyword: ")
+recommendations = recommend_items(keyword.lower())
+
+if recommendations:
+    for i, rec_list in enumerate(recommendations):
+        print(f"\nRecommendation {i+1}:")
+        for item in rec_list:
+            print(f"  Product ID: {item['product_id']}")
+            print(f"  Brand: {item['brand']}")
+            print(f"  Price: {item['price']}")
+            print(f"  Category 0: {item['cat_0']}")
+            print(f"  Category 1: {item['cat_1']}")
+            print(f"  Category 2: {item['cat_2']}")
+else:
+    print("No recommendations found for this keyword.")

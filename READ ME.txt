@@ -1,0 +1,35 @@
+# 🛍 E-Commerce Recommendation System – Machine Learning Project  
+
+🚀 **Personalized Product Recommendations using ML**  
+
+## **🔹 Overview**  
+This project builds an **ML-powered recommendation system** that suggests products to users based on their past behavior and item preferences.  
+It leverages **Collaborative Filtering, Content-Based Filtering, and Hybrid models** to optimize recommendations and improve customer engagement.  
+
+## **🔹 Key Features & Steps**
+1️⃣ **Data Collection & Preprocessing**  
+- Cleaned and transformed user-item interaction data.  
+- Performed **feature engineering** to enhance recommendation accuracy.  
+
+2️⃣ **Building Recommendation Models**  
+✔ **Collaborative Filtering** – Uses **user-user & item-item similarity** to recommend products.  
+✔ **Content-Based Filtering** – Matches **product features** with user interests.  
+✔ **Hybrid Model** – Combines collaborative & content-based filtering for improved results.  
+
+3️⃣ **Evaluation & Performance Metrics**  
+✔ **Root Mean Square Error (RMSE)** to measure model accuracy.  
+✔ **Precision-Recall & Hit Rate** to assess recommendation effectiveness.  
+
+4️⃣ **Data Visualization with Power BI**  
+✔ Built **interactive dashboards** to analyze user behavior and recommendation performance.  
+✔ Visualized trends in product recommendations, purchase patterns, and interactions.  
+
+## **🔹 Technologies Used**
+- **Python (Pandas, NumPy, Scikit-Learn, Surprise Library)**  
+- **Power BI for Visualizations**  
+- **Collaborative & Content-Based Filtering Models**  
+- **Evaluation Metrics (RMSE, Precision, Recall)**  
+
+## **📌 Why This Project Matters**
+This recommendation system **enhances user experience in e-commerce** by **personalizing product suggestions**, improving customer engagement, and boosting sales conversions.  
+
