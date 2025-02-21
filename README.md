@@ -11,4 +11,4 @@ It leverages **collaborative filtering, content-based filtering, and hybrid appr
 ✔ **Evaluation Metrics** – RMSE, Precision-Recall, Hit Rate.  
 ✔ **Interactive Power BI Dashboard** – Visualizing recommendations & performance metrics.  
 
-
+Dataset I have used is too large but you can try and find any dataset, it helps if its categorized and cleaned 
