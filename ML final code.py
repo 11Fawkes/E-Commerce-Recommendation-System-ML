@@ -5,7 +5,8 @@ from scipy.sparse.linalg import svds
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 
-data = pd.read_parquet(r'C:\Users\dk103\Downloads\test.parquet\test.parquet')
+import os
+data = pd.read_parquet(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data', 'test.parquet'))
 
 sample_df = data.sample(n=1200, random_state=42)
 sample_df.reset_index(drop=True, inplace=True)
